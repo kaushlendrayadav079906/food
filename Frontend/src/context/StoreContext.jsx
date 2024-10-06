@@ -1,59 +1,87 @@
+import axios from "axios";
 import { createContext, useEffect, useState } from "react";
-import { food_list } from "../assets/assets"; // Import your food list
+import { food_list } from "../assets/assets"; // Ensure food_list is imported correctly
 
-// Create the context
+const url = "http://localhost:8889"; // Base URL for your API
+
 export const StoreContext = createContext(null);
 
-// Create the provider component
 const StoreContextProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState({}); // State for cart items
+  const [cartItems, setCartItems] = useState({});
+  const [token, setToken] = useState(null);
 
-  // Function to add an item to the cart
-  const addToCart = (itemId) => {
-    setCartItems((prev) => ({
-      ...prev,
-      [itemId]: (prev[itemId] || 0) + 1, // Increment quantity or initialize to 1
-    }));
-  };
-
-  // Function to remove an item from the cart
-  const removeFromCart = (itemId) => {
-    setCartItems((prev) => {
-      if (prev[itemId] === 1) {
-        // Set the item to 0 when it's the last one being removed
-        return {
-          ...prev,
-          [itemId]: 0, // This keeps it in the state but sets the quantity to 0
-        };
-      } else if (prev[itemId] > 1) {
-        // Decrease quantity if it's more than 1
-        return {
-          ...prev,
-          [itemId]: prev[itemId] - 1,
-        };
-      }
-      return prev; // Return the previous state if there's nothing to remove
-    });
-  };
-
+  // Load token from local storage
   useEffect(() => {
-    console.log(cartItems); // For debugging cart updates
-  }, [cartItems]);
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
 
-  // Context value that provides the state and functions to the children
-  const contextValue = {
-    food_list,   // Ensure food_list is imported and accessible
-    cartItems,   // Cart items state
-    addToCart,   // Function to add to cart (ensure it's passed in context)
-    removeFromCart, // Function to remove from cart
+  // Add item to cart
+  const addToCart = async (itemId, quantity = 1) => {
+    try {
+      if (token) {
+        await axios.post(
+          `${url}/api/cart/add`, 
+          { itemId, quantity },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+      }
+      // Update the local state to reflect the change
+      setCartItems((prev) => {
+        const updatedCart = { ...prev };
+        if (updatedCart[itemId]) {
+          updatedCart[itemId] += quantity; // Increment quantity if item already in cart
+        } else {
+          updatedCart[itemId] = quantity; // Add new item if not in cart
+        }
+        return updatedCart;
+      });
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+
+  // Remove item from cart
+  const removeFromCart = async (itemId) => {
+    try {
+      if (token) {
+        await axios.post(
+          `${url}/api/cart/remove`, 
+          { itemId },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+      }
+      // Update local cartItems state
+      setCartItems((prev) => {
+        const newCartItems = { ...prev };
+        if (newCartItems[itemId] === 1) {
+          delete newCartItems[itemId];
+        } else if (newCartItems[itemId] > 1) {
+          newCartItems[itemId] -= 1;
+        }
+        return newCartItems;
+      });
+    } catch (error) {
+      console.error("Error removing from cart:", error);
+    }
+  };
+
+  // Calculate total amount of items in the cart
+  const getTotalCartAmount = () => {
+    return Object.values(cartItems).reduce((total, quantity) => total + quantity, 0);
   };
 
   return (
-    <StoreContext.Provider value={contextValue}>
+    <StoreContext.Provider value={{ cartItems, setCartItems, addToCart, removeFromCart, token, setToken, food_list }}>
       {children}
     </StoreContext.Provider>
   );
 };
 
-// Export the provider as a default export
 export default StoreContextProvider;

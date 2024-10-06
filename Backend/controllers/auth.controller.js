@@ -1,18 +1,28 @@
-const bcrypt = require('bcryptjs');
-const user_model = require('../models/user.model');
-const jwt = require('jsonwebtoken');
+// Import necessary modules
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import user_model from '../models/user.model.js';
+import dotenv from 'dotenv';
 
-const secret = 'yourSecretKey'; // Replace with your actual secret key
+// Load environment variables
+dotenv.config();
+
+const secret = process.env.JWT_SECRET; // Use secret from .env file
 
 // Signup function
-exports.signup = async (req, res) => { // Use lowercase 'signup' to match with routes
+export const signup = async (req, res) => {
   const { name, email, password } = req.body;
+
+  // Validate required fields
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
 
   try {
     // Check if user already exists
     const userExists = await user_model.findOne({ email });
     if (userExists) {
-      return res.status(400).send("User already exists");
+      return res.status(400).json({ message: "User already exists" });
     }
 
     // Hash password and create user
@@ -23,41 +33,51 @@ exports.signup = async (req, res) => { // Use lowercase 'signup' to match with r
       password: hashedPassword,
     });
 
-    res.status(201).send(`User ${newUser.name} created successfully`);
+    return res.status(201).json({
+      message: `User ${newUser.name} created successfully`,
+      user: {
+        name: newUser.name,
+        email: newUser.email,
+      },
+    });
   } catch (error) {
-    res.status(500).send('Error occurred during signup');
+    console.error("Error during signup:", error);
+    return res.status(500).json({ message: 'Error occurred during signup' });
   }
 };
 
 // Signin function
-exports.signin = async (req, res) => { // Use lowercase 'signin' to match with routes
-  const { email, password } = req.body; // 'name' is not needed for signin
+export const signin = async (req, res) => {
+  const { email, password } = req.body;
+
+  // Validate required fields
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
 
   try {
     // Check if user exists
     const user = await user_model.findOne({ email });
     if (!user) {
-      return res.status(404).send('User not found');
+      return res.status(404).json({ message: 'User not found' });
     }
 
     // Validate password
     const isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).send('Invalid password');
+      return res.status(401).json({ message: 'Invalid password' });
     }
 
-    // Generate token
-    const token = jwt.sign({ id: user._id }, secret, {
-      expiresIn: 120, // Token expires in 120 seconds (2 minutes)
-    });
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id }, secret, { expiresIn: '2h' }); // Set expiry as 2 hours
 
-    // Respond with user data and token
-    res.status(200).send({
+    return res.status(200).json({
       name: user.name,
       email: user.email,
       accessToken: token,
     });
   } catch (error) {
-    res.status(500).send('Error occurred during signin');
+    console.error("Error during signin:", error);
+    return res.status(500).json({ message: 'Error occurred during signin' });
   }
 };

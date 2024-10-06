@@ -1,23 +1,59 @@
-.header{
-    height: 34vw;
-    margin: 30px auto;
-    background: url('/header_img.png')no-repeat;
-    background-size: contain;
-    position: relative;
+.header {
+    height: 34vw; /* Height based on viewport width */
+    margin: 30px auto; /* Center the header */
+    background: url('https://i.pinimg.com/564x/83/92/48/839248ebb297e634cd6247adf4643681.jpg') no-repeat center center;
+    background-size: cover; /* Make the background image cover the header */
+    position: relative; /* For positioning of absolute children */
+    color: white; /* Text color */
 }
-.header-contents{
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    gap: 1.5vw;
-    max-width: 50%;
-    bottom: 10%;
-    left: 6vw;
+
+.header-contents {
+    position: absolute; /* Position relative to .header */
+    display: flex; /* Flexbox layout */
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-start; /* Align items to the start */
+    gap: 1.5vw; /* Gap between elements */
+    max-width: 50%; /* Limit content width */
+    bottom: 10%; /* Position 10% from the bottom */
+    left: 6vw; /* Position 6vw from the left */
 }
-.header-contents h2{
-    font-weight: 500;
-    color: white;
-    font-size: max(4.5vw,22px);
-    
+
+.header-contents h2 {
+    font-weight: 500; /* Medium weight for the heading */
+    color: rgb(229, 34, 37); /* Text color */
+    font-size: max(4.5vw, 22px); /* Responsive font size */
+}
+
+@media (max-width: 768px) {
+    .header {
+        height: 50vw; /* Increase height on smaller screens */
+        margin: 20px auto;
+    }
+
+    .header-contents {
+        left: 4vw; /* Adjust left position for smaller screens */
+        bottom: 8%; /* Adjust bottom position */
+        max-width: 70%; /* Increase max width to take up more space */
+    }
+
+    .header-contents h2 {
+        font-size: max(6vw, 20px); /* Adjust font size for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        height: 60vw; /* Increase height on very small screens */
+        margin: 10px auto;
+    }
+
+    .header-contents {
+        left: 3vw; /* Adjust left position further for very small screens */
+        bottom: 5%; /* Position closer to the bottom */
+        max-width: 90%; /* Allow more width for the content */
+    }
+
+    .header-contents h2 {
+        font-size: max(8vw, 18px); /* Adjust font size for very small screens */
+    }
 }

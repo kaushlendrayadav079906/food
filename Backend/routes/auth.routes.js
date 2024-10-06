@@ -1,9 +1,12 @@
-const express = require('express');
+// routes/auth.routes.js
+import express from "express";
+import { signup, signin } from "../controllers/auth.controller.js"; // Ensure this import is correct
+
 const router = express.Router();
-const authController = require('../controllers/auth.controller'); // Ensure this path is correct
 
-// Define routes
-router.post('/signup', authController.signup);  // Ensure the correct function is referenced
-router.post('/signin', authController.signin);  // Ensure the correct function is referenced
+// Define the routes
+router.post("/signup", signup);
+router.post("/signin", signin);
 
-module.exports = router;
+// Export the router as ES module
+export default router;
