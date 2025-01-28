@@ -4,59 +4,63 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const List = () => {
-  const url = "http://localhost:8889/ecomm/api/v1/auth";
-  const [list, setList] = useState([]);
+    const url = "http://localhost:8889";
+    const [list, setList] = useState([]);
 
-  // Fetch list function
-  const fetchList = async () => {
-    try {
-      const response = await axios.get(`${url}/ecomm/api/v1/auth`);
-      if (response.data.success) {
-        setList(response.data.data);
-      } else {
-        toast.error('Failed to fetch the list');
-      }
-    } catch (error) {
-      toast.error(`Error: ${error.message}`);
-    }
-  };
+    const fetchList = async () => {
+        try {
+            const response = await axios.get(`${url}/api/food/list`);
+            if (response.data.success) {
+                setList(response.data.data);
+            } else {
+                toast.error('Failed to fetch the list');
+            }
+        } catch (error) {
+            toast.error(`Error: ${error.response?.data?.message || error.message}`);
+        }
+    };
 
-  // Fetch list on component mount
-  useEffect(() => {
-    fetchList();
-  }, []);
+    const handleDelete = async (id, name) => {
+        try {
+            const response = await axios.delete(`${url}/api/food/remove/${id}`);
+            if (response.data.success) {
+                setList((prevList) => prevList.filter((item) => item._id !== id));
+                toast.success(`${name} has been removed`);
+            } else {
+                toast.error('Failed to delete the item');
+            }
+        } catch (error) {
+            toast.error(`Error: ${error.response?.data?.message || error.message}`);
+        }
+    };
 
-  return (
-    <div className='list-container'>
-      <h2>Product List</h2>
-      <table className='product-table'>
-        <thead>
-          <tr>
-            <th>Product Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {list.length > 0 ? (
-            list.map((product, index) => (
-              <tr key={index}>
-                <td>{product.name}</td>
-                <td>{product.category}</td>
-                <td>${product.price}</td>
-                <td><button>Edit</button></td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4">No products available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
+    useEffect(() => {
+        fetchList();
+    }, []);
+
+    return (
+        <div className="list-container">
+            <h2>All Food List</h2>
+            <div className="list-table">
+                <div className="list-table-format title">
+                    <b>Image</b>
+                    <b>Name</b>
+                    <b>Category</b>
+                    <b>Price</b>
+                    <b>Action</b>
+                </div>
+                {list.map((item) => (
+                    <div key={item._id} className="list-table-format">
+                        <img src={`${url}/image/${item.image}`} alt={item.name} />
+                        <p>{item.name}</p>
+                        <p>{item.category}</p>
+                        <p>₹{item.price}</p>
+                        <button onClick={() => handleDelete(item._id, item.name)}>X</button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
 export default List;

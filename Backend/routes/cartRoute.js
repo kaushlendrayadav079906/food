@@ -1,12 +1,15 @@
-import express from "express";
-import { addToCart, removeFromCart, getCart } from "../controllers/cartController.js";
-
+// cartRoute.js
+import express from 'express';
 const cartRouter = express.Router();
 
-// Define your cart routes
-cartRouter.post("/add", addToCart);        
-cartRouter.post("/remove", removeFromCart); 
-cartRouter.get("/getCart", getCart); // Change to /getCart
+cartRouter.post('/add', (req, res) => {
+    const { item } = req.body;
+    if (!item) {
+        return res.status(400).json({ message: 'Item data is required' });
+    }
+    
+    console.log('Item added to cart:', item);
+    res.status(200).json({ message: 'Item added to cart', item });
+});
 
-// Export the router
 export default cartRouter;

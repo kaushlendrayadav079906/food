@@ -34,18 +34,36 @@ const listFood = async (req, res) => {
     }
 }
 //remove food item
-const removeFood = async (req,res)=>{
-    try{
-        const food = await foodModel.findById(req.body.id);
-        fs.unlink(`uploads/${food.image}`,()=>{})
+// remove food item
+const removeFood = async (req, res) => {
+    try {
+        // Find the food by ID using req.params.id
+        const food = await foodModel.findById(req.params.id);
 
-        await foodModel.findByIdAndDelete(req.body.id);
-        res.json({success:true,message:"Food Removed"})
-    }catch(error){
-        console.log(error);
-        res.json({success:false,message:"Error"})
+        // Check if the food item exists
+        if (!food) {
+            return res.status(404).json({ success: false, message: "Food item not found" });
+        }
+
+        // Check if the image exists before trying to delete it
+        if (food.image) {
+            fs.unlink(`uploads/${food.image}`, (err) => {
+                if (err) {
+                    console.error("Error removing image:", err);
+                    return res.status(500).json({ success: false, message: "Error deleting image" });
+                }
+            });
+        }
+
+        // Remove the food item from the database
+        await foodModel.findByIdAndDelete(req.params.id);
+
+        res.json({ success: true, message: "Food item removed successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Error removing food item" });
     }
-}
+};
 
 
 export { addFood, listFood,removeFood };

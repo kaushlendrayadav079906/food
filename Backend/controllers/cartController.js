@@ -76,7 +76,6 @@ export const removeFromCart = async (req, res) => {
 };
 
 // Function to get the cart data
-// Function to get the cart data
 export const getCart = async (req, res) => {
     const userId = req.user.id; // Assume you set user ID in middleware based on the token
 

@@ -1,12 +1,17 @@
-// routes/auth.routes.js
-import express from "express";
-import { signup, signin } from "../controllers/auth.controller.js"; // Ensure this import is correct
+// auth.routes.js
+import express from 'express';
+const authRouter = express.Router();
 
-const router = express.Router();
+// Example: Registration route
+authRouter.post('/register', (req, res) => {
+    // Your logic for user registration
+    res.status(200).json({ message: 'User registered successfully' });
+});
 
-// Define the routes
-router.post("/signup", signup);
-router.post("/signin", signin);
+// Example: Login route
+authRouter.post('/login', (req, res) => {
+    // Your logic for user login
+    res.status(200).json({ message: 'User logged in successfully' });
+});
 
-// Export the router as ES module
-export default router;
+export default authRouter;

@@ -1,11 +1,11 @@
-import React, { useState, useContext } from "react";
-import "./LoginPopup.css";
-import { assets } from "../../assets/assets";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext"; // Import StoreContext
+import "./LoginPopup.css";
 
 const LoginPopup = ({ setShowLogin }) => {
-  const { setToken } = useContext(StoreContext); // Get setToken from context
+  const { setToken, setUserId } = useContext(StoreContext); // Get setToken and setUserId from context
   const [currState, setCurrState] = useState("Login");
   const [formData, setFormData] = useState({
     name: "",
@@ -28,7 +28,6 @@ const LoginPopup = ({ setShowLogin }) => {
     event.preventDefault();
     setIsLoading(true);
 
-    // Set the URL based on the current state (Login or Sign Up)
     const url =
       currState === "Sign Up"
         ? "http://localhost:8889/api/auth/signup"
@@ -46,31 +45,27 @@ const LoginPopup = ({ setShowLogin }) => {
 
       const data = await response.json();
 
+      // Handle non-200 responses
       if (!response.ok) {
-        // Check for specific error messages
-        if (data.message) {
-          throw new Error(data.message);
-        } else {
-          throw new Error("An unexpected error occurred.");
-        }
+        console.error("Server responded with an error:", data);
+        throw new Error(data.message || "An unexpected error occurred.");
       }
 
       console.log("Response from server:", data);
 
       if (currState === "Sign Up") {
-        setMessage("Registration successful! Redirecting to login...");
-        setTimeout(() => {
-          setCurrState("Login");
-          setMessage("");
-        }, 2000);
+        setMessage("Registration successful! Switching to login...");
+        setCurrState("Login"); // Directly switch to Login state
       } else {
         setMessage("Login successful!");
-        localStorage.setItem("token", data.accessToken); // Save the token
-        setToken(data.accessToken); // Set token in context
+        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("userId", data.userId); // Store userId in local storage
+        setToken(data.accessToken);
+        setUserId(data.userId);
 
         setTimeout(() => {
-          setShowLogin(false); // Close the popup
-          navigate("/"); // Redirect to the home page
+          setShowLogin(false);
+          navigate("/");
         }, 1000);
       }
 

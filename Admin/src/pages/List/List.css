@@ -1,66 +1,58 @@
 /* List.css */
 .list-container {
-  padding: 20px 40px 20px 20px; /* Increased padding on the right */
+  padding: 20px 40px;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  max-width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-}
-.add-img-upload {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Align to the left */
-  margin-bottom: 0;
-  padding-bottom: 0;
-  margin-right: 20px; /* Add 20px margin to the right */
-}
-
-.add-img-upload img {
-  width: 100%;
-  max-width: 150px; /* Keep the reduced image size */
-  height: auto;
-  border: 2px dashed #ccc;
-  border-radius: 5px;
-  margin-bottom: 4px;
-  cursor: pointer;
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   margin-bottom: 20px;
   text-align: center;
+  color: #333;
 }
 
-.product-table {
-  width: 100%;
-  border-collapse: collapse;
+.list-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.product-table th,
-.product-table td {
-  padding: 12px 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  font-size: 14px;
+.list-table-format {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr 1fr 80px;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.product-table th {
+.list-table-format.title {
+  font-weight: bold;
   background-color: #4CAF50;
   color: white;
 }
 
-.product-table td {
-  background-color: #fff;
+.list-table-format img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
-.product-table tr:hover {
-  background-color: #f1f1f1;
+.list-table-format p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
 }
 
 button {
-  padding: 8px 12px;
-  background-color: #4CAF50;
+  padding: 6px 12px;
+  background-color: #e74c3c;
   color: white;
   border: none;
   border-radius: 4px;
@@ -69,31 +61,17 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #c0392b;
 }
 
-@media (max-width: 600px) {
+/* Responsive design */
+@media (max-width: 768px) {
+  .list-table-format {
+    grid-template-columns: 80px 1fr 1fr 1fr 60px;
+    font-size: 12px;
+  }
+
   .list-container {
-    padding: 10px 20px 10px 10px; /* Reduced padding on smaller screens but still larger on the right */
-  }
-
-  .product-table {
-    font-size: 12px;
-  }
-
-  .product-table th, .product-table td {
-    padding: 8px 5px;
-  }
-
-  button {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-
-  /* Make the table scrollable horizontally on small screens */
-  .product-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+    padding: 15px 20px;
   }
 }

@@ -1,0 +1,89 @@
+/* Container for the food detail page */
+.Food-detail-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    margin-top: 20px;
+    padding: 15px;
+  }
+  
+  /* Image container */
+  .Food-detail-image-container {
+    flex: 1; /* Takes up one part of the space */
+    max-width: 400px;
+  }
+  
+  .Food-detail-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  
+  /* Container for the additional Details section */
+  .Food-detail-details {
+    flex: 2; /* Takes up twice the space of the image */
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Styling for the Title */
+  .Food-detail-details .Food-detail-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  /* Styling for the Rating */
+  .Food-detail-details .Food-detail-rating {
+    font-size: 16px;
+    color: #ff9800; /* Star rating color */
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Styling for the Price */
+  .Food-detail-details .Food-detail-price {
+    font-size: 18px;
+    font-weight: 600;
+    color: #388e3c; /* Green for price */
+    margin-bottom: 10px;
+  }
+  
+  /* Styling for the Description */
+  .Food-detail-details .Food-detail-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .Food-detail-container {
+      flex-direction: column; /* Stack image and details vertically */
+    }
+  
+    .Food-detail-details {
+      padding: 10px;
+      margin-top: 15px;
+    }
+  
+    .Food-detail-details .Food-detail-title {
+      font-size: 20px;
+    }
+  
+    .Food-detail-details .Food-detail-price {
+      font-size: 16px;
+    }
+  
+    .Food-detail-details .Food-detail-desc {
+      font-size: 13px;
+    }
+  }
+  

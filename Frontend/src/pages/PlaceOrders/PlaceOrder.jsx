@@ -1,10 +1,10 @@
+import axios from 'axios';
 import React, { useContext, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext'; // Ensure this path is correct
 import './PlaceOrder.css';
-import axios from 'axios';
 
 const PlaceOrder = () => {
-  const { getTotalCardAmount, token, cartItems, food_list, url } = useContext(StoreContext);
+  const { token, cartItems, food_list, url, userId } = useContext(StoreContext);
   const [data, setData] = useState({
     firstName: "",
     lastName: "",
@@ -17,43 +17,51 @@ const PlaceOrder = () => {
     phone: "",
   });
 
-  // Change handler for input fields
   const onChangeHandler = (event) => {
-    const { name, value } = event.target; // Destructure the event target
-    setData(prevData => ({ ...prevData, [name]: value })); // Update state with new value
+    const { name, value } = event.target;
+    setData(prevData => ({ ...prevData, [name]: value }));
   };
 
   const placeOrder = async (event) => {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
     const orderItems = [];
 
-    // Prepare order items based on cart
     food_list.forEach((item) => {
-      if (cartItems[item._id] > 0) { // Ensure cart item exists
+      if (cartItems[item._id] > 0) {
         orderItems.push({
-          productId: item._id, // Use item ID for reference
-          quantity: cartItems[item._id], // Get quantity from cart
-          price: item.price, // Include price for order
+          productId: item._id,
+          quantity: cartItems[item._id],
+          price: item.price,
         });
       }
     });
 
-    // Create order data object
+    // Calculate subtotal, delivery fee, and total amount here
+    const subtotal = orderItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const deliveryFee = 10; // Fixed delivery fee
+    const totalAmount = subtotal + deliveryFee;
+
     const orderData = {
-      address: data,
+      address: {
+        ...data,
+        zip: data.zipcode, // Ensure this matches your backend expectations
+      },
       items: orderItems,
-      amount: getTotalCardAmount() + 10, // Adjust for delivery fee
+      amount: totalAmount,
+      userId: userId, // Ensure userId is correctly set
     };
 
+    console.log("Order Data:", orderData); // Debugging line to check order data
+
     try {
-      // Send order data to the backend
       const response = await axios.post(`${url}/api/order/place-order`, orderData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
+
       if (response.data.success) {
         const { session_url } = response.data;
-        window.location.replace(session_url); // Redirect to payment session
+        window.location.replace(session_url);
       } else {
         alert("Error placing order, please try again.");
       }
@@ -63,13 +71,11 @@ const PlaceOrder = () => {
     }
   };
 
-  // Calculate the subtotal
-  const subtotal = food_list.reduce((total, item) => {
-    return total + (item.price * (cartItems[item._id] || 0));
-  }, 0);
-
+  // Calculate subtotal, delivery fee, and total amount for rendering
+  const orderItems = food_list.filter(item => cartItems[item._id] > 0);
+  const subtotal = orderItems.reduce((total, item) => total + (item.price * cartItems[item._id]), 0);
   const deliveryFee = 10; // Fixed delivery fee
-  const total = subtotal + deliveryFee;
+  const totalAmount = subtotal + deliveryFee;
 
   return (
     <form onSubmit={placeOrder} className="place-order">
@@ -99,7 +105,7 @@ const PlaceOrder = () => {
           <hr />
           <div className="cart-total-details">
             <b>Total</b>
-            <b>Rs {total.toFixed(2)}</b>
+            <b>Rs {totalAmount.toFixed(2)}</b>
           </div>
         </div>
       </div>

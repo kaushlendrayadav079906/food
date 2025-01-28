@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import './Add.css';
-import { assets } from '../../assets/assets'; // Make sure this path is correct
-import axios from "axios";
+import { assets } from '../../assets/assets'; // Ensure this path is correct
+import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const Add = () => {
-    const url = "http://localhost:8889/ecomm/api/v1/auth"; // Base URL for API
-    const [image, setImage] = useState(null); // Initialize as null
+    const url = "http://localhost:8889/api/food"; // Backend base URL
+    const [image, setImage] = useState(null); // Image file state
     const [data, setData] = useState({
         name: "",
         description: "",
         price: "",
-        category: "Salad"
+        category: "Salad",
     });
 
     const onChangeHandler = (event) => {
         const { name, value } = event.target;
-        setData(prevData => ({ ...prevData, [name]: value }));
+        setData((prevData) => ({ ...prevData, [name]: value }));
     };
 
     const onSubmitHandler = async (event) => {
         event.preventDefault();
+
         const formData = new FormData();
         formData.append("name", data.name);
         formData.append("description", data.description);
@@ -31,25 +32,23 @@ const Add = () => {
         try {
             const response = await axios.post(`${url}/add`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data' // Set the content type to multipart/form-data
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
             if (response.data.success) {
-                // Reset form after successful submission
                 setData({
                     name: "",
                     description: "",
                     price: "",
-                    category: "Salad"
+                    category: "Salad",
                 });
-                setImage(null); // Reset image
-                toast.success(response.data.message);
+                setImage(null);
+                toast.success("Product added successfully!");
             } else {
                 toast.error(response.data.message);
             }
         } catch (error) {
-            // Handle errors
             toast.error(`Error: ${error.response?.data?.message || error.message}`);
         }
     };
@@ -60,37 +59,40 @@ const Add = () => {
                 <div className='add-img-upload flex-col'>
                     <p>Upload Image</p>
                     <label htmlFor="image">
-                        <img src={image ? URL.createObjectURL(image) : assets.upload_area} alt="Upload Area" />
+                        <img
+                            src={image ? URL.createObjectURL(image) : assets.upload_area}
+                            alt="Upload Area"
+                        />
                     </label>
-                    <input 
-                        onChange={(e) => setImage(e.target.files[0])} 
-                        type="file" 
-                        id="image" 
-                        hidden 
-                        required 
+                    <input
+                        onChange={(e) => setImage(e.target.files[0])}
+                        type="file"
+                        id="image"
+                        hidden
+                        required
                     />
                 </div>
 
                 <div className='add-product-name flex-col'>
                     <p>Product Name</p>
-                    <input 
-                        onChange={onChangeHandler} 
-                        value={data.name} 
-                        type="text" 
-                        name='name' 
-                        placeholder='Type here' 
-                        required 
+                    <input
+                        onChange={onChangeHandler}
+                        value={data.name}
+                        type="text"
+                        name='name'
+                        placeholder='Type here'
+                        required
                     />
                 </div>
 
                 <div className='add-product-description flex-col'>
                     <p>Product Description</p>
-                    <textarea 
-                        onChange={onChangeHandler} 
-                        value={data.description} 
-                        name="description" 
-                        rows="6" 
-                        placeholder='Write content here' 
+                    <textarea
+                        onChange={onChangeHandler}
+                        value={data.description}
+                        name="description"
+                        rows="6"
+                        placeholder='Write content here'
                         required
                     ></textarea>
                 </div>
@@ -98,29 +100,28 @@ const Add = () => {
                 <div className='add-category-price flex-col'>
                     <div className='add-category flex'>
                         <p>Product Category</p>
-                        <select 
-                            name="category" 
-                            value={data.category} 
-                            onChange={onChangeHandler} 
+                        <select
+                            name="category"
+                            value={data.category}
+                            onChange={onChangeHandler}
                             required
                         >
                             <option value="Salad">Salad</option>
                             <option value="Rolls">Rolls</option>
                             <option value="Dessert">Dessert</option>
                             <option value="Pasta">Pasta</option>
-                            {/* Add more categories as needed */}
                         </select>
                     </div>
 
                     <div className='add-price flex-col'>
                         <p>Price</p>
-                        <input 
-                            onChange={onChangeHandler} 
-                            value={data.price} 
-                            type="number" 
-                            name='price' 
-                            placeholder='Enter price' 
-                            required 
+                        <input
+                            onChange={onChangeHandler}
+                            value={data.price}
+                            type="number"
+                            name='price'
+                            placeholder='Enter price'
+                            required
                         />
                     </div>
                 </div>
